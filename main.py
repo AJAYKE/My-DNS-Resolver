@@ -1,9 +1,9 @@
 import socket
 import struct
 
-from app.answer import DNSAnswer
-from app.header import DNSHeader
-from app.question import DNSQuestion
+from answer import DNSAnswer
+from header import DNSHeader
+from question import DNSQuestion
 
 
 def parse_dns_header(data):
@@ -15,6 +15,23 @@ def parse_dns_header(data):
     question_count = header[2]
 
     return packet_identifier, operation_code, recursion_desired, question_count
+
+def parse_dns_query(data):
+    name = []
+    i = 0
+    while True:
+        length = data[i]
+        if length == 0:
+            break
+        name.append(data[i+1: i+1+length])
+        i += length+1
+    
+    domain_name = b'.'.join(name).decode()
+
+    qtype, qclass = struct.unpack('!HH', data[i + 1: i + 5])
+        
+    return domain_name, qtype, qclass
+
 
 
 def main():
@@ -32,13 +49,15 @@ def main():
 
             packet_identifier, operation_code, recursion_desired, question_count = parse_dns_header(buf)
 
+            domain_name, qtype, qclass = parse_dns_query(buf[12:])
+
             dns_header = DNSHeader(packet_identifier=packet_identifier, operation_code=operation_code, recursion_desired=recursion_desired, query_response=1, question_count=question_count, answer_record_count=1)
             response_header = dns_header.build_header()
 
-            dns_question = DNSQuestion(domain_name='codecrafters.io',record_type=1,record_class=1)
+            dns_question = DNSQuestion(domain_name=domain_name,record_type=qtype,record_class=qclass)
             response_question = dns_question.build_question()
 
-            dns_answer = DNSAnswer(domain_name='codecrafters.io')
+            dns_answer = DNSAnswer(domain_name=domain_name)
             response_answer = dns_answer.build_answer()
 
             response = response_header+response_question+response_answer
