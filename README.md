@@ -48,3 +48,15 @@ Each question has the following structure:
 Name: A domain name, represented as a sequence of "labels"
 Type: 2-byte int; the type of record
 Class: 2-byte int; usually set to 1
+
+## Answer
+
+The answer section contains a list of RRs (Resource Records), which are answers to the questions asked in the question section.
+Each RR has the following structure:
+
+1. Name ------------------ Label ------------ Sequence The domain name encoded as a sequence of labels.
+2. Type ------------------ 2-byte Integer --- 1 for an A record, 5 for a CNAME record etc., full list here
+3. Class ----------------- 2-byte Integer --- Usually set to 1 (full list here)
+4. TTL (Time-To-Live) ---- 4-byte Integer --- The duration in seconds a record can be cached before requerying.
+5. Length (RDLENGTH) ----- 2-byte Integer --- Length of the RDATA field in bytes.
+6. Data (RDATA) ---------- Variable --------- Data specific to the record type.

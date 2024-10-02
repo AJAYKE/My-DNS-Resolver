@@ -1,5 +1,6 @@
 import socket
 
+from answer import DNSAnswer
 from header import DNSHeader
 from question import DNSQuestion
 
@@ -23,7 +24,10 @@ def main():
             dns_question = DNSQuestion(domain_name='codecrafters.io',record_type=1,record_class=1)
             response_question = dns_question.build_question()
 
-            response = response_header+response_question
+            dns_answer = DNSAnswer(domain_name='codecrafters.io')
+            response_answer = dns_answer.build_answer()
+
+            response = response_header+response_question+response_answer
             udp_socket.sendto(response, source)
 
     
