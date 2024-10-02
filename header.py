@@ -15,7 +15,7 @@ class DNSHeader:
         self.recursion_desired = recursion_desired
         self.recursion_available = recursion_available
         self.reserved = reserved
-        self.response_code = response_code
+        self.response_code = 0 if self.operation_code == 0 else 4 
 
         self.flags = 0  # Initialize flags as 0
         self.question_count = question_count
